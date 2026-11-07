@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#b5121b">
+<title>Digital Transaction Dashboard | RMS 'X' Division</title>
+<style>
+:root{--navy:#b5121b;--navy2:#8f0d15;--blue:#c51f2a;--bg:#fff7f7;--paper:#fff;--ink:#2a2020;--muted:#786c6c;--line:#f0dede;--green:#147d4b;--greenbg:#e8f5ee;--red:#b5121b;--redbg:#fff0f0;--amber:#94600c;--amberbg:#fff4df;--shadow:0 8px 28px #8f0d1510}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+header{background:linear-gradient(115deg,#b5121b,#8f0d15);color:white;padding:25px max(18px,calc((100vw - 1200px)/2)) 23px}
+.head{max-width:1200px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:20px}.kicker{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;opacity:.72;font-weight:800}.head h1{font-size:clamp(23px,3vw,32px);margin:5px 0 2px;letter-spacing:-.7px}.subtitle{font-size:13px;opacity:.78}.connection{font-size:11px;font-weight:800;border:1px solid #ffffff4a;background:#ffffff12;border-radius:30px;padding:9px 13px;white-space:nowrap}.led{display:inline-block;width:7px;height:7px;background:#6be29b;border-radius:50%;margin-right:7px}
+main{max-width:1200px;margin:22px auto 50px;padding:0 18px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}.controls{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.fieldlabel{font-size:12px;font-weight:750;color:#536477}select,button{font:inherit;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);padding:9px 12px}select{min-width:145px}button{cursor:pointer;font-weight:750}button.primary{background:var(--navy);border-color:var(--navy);color:#fff}button:disabled{opacity:.55;cursor:wait}.updated{font-size:11px;color:var(--muted)}
+.alert{padding:12px 14px;border-radius:11px;background:#fff7e8;border:1px solid #f1dfb5;color:#76500b;margin-bottom:15px;font-size:13px}.alert.error{background:#fff0f0;border-color:#f1caca;color:#8d2929}.alert.ok{background:#eaf7ef;border-color:#cbe8d5;color:#17623d}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin:17px 0 15px}.tab{border:0;background:transparent;border-radius:8px 8px 0 0;color:var(--muted);padding:11px 15px;border-bottom:3px solid transparent}.tab.active{color:var(--navy);border-bottom-color:#b5121b;background:#fff0f0}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.card,.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}.metric-card{padding:16px}.metric-label{font-size:11px;color:var(--muted);font-weight:750}.metric{font-size:clamp(25px,3vw,34px);font-weight:850;letter-spacing:-1px;margin:7px 0 1px;font-variant-numeric:tabular-nums}.note{font-size:11px;color:var(--muted)}.good{color:var(--green)}.bad{color:var(--red)}.amber{color:var(--amber)}
+.section{margin-top:20px}.sectionhead{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:0 2px 10px}.section h2{font-size:16px;margin:0}.hint{font-size:11px;color:var(--muted);margin-top:2px}
+.officegrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.office{padding:15px}.office-name{font-size:13px;font-weight:800}.office-pct{font-size:24px;font-weight:850;margin:11px 0 7px;font-variant-numeric:tabular-nums}.track{height:8px;border-radius:20px;background:#edf1f5;overflow:hidden}.bar{height:100%;border-radius:20px}.bar.good{background:#1b9a5b}.bar.bad{background:#d84a4a}.pill{font-size:9px;font-weight:850;letter-spacing:.3px;border-radius:20px;padding:4px 7px;background:var(--greenbg);color:var(--green)}.pill.bad{background:var(--redbg);color:var(--red)}
+.panel{overflow:hidden}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:760px}th,td{padding:11px 13px;border-bottom:1px solid var(--line);text-align:right;font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap}th{background:#f8fafc;color:#617184;font-size:10px;text-transform:uppercase;letter-spacing:.35px}td:first-child,th:first-child{text-align:left}tbody tr:last-child td{border-bottom:0}.total{font-weight:850;background:#f7f9fc}.chartbox{padding:16px}.chart{display:block;width:100%;height:230px}.empty{padding:28px;text-align:center;color:var(--muted)}
+.timebanner{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:15px 17px;background:#fff;border:1px solid #f0dede;border-left:4px solid #b5121b;border-radius:12px;margin-bottom:13px}.time-stamps{display:flex;gap:12px;flex-wrap:wrap}.stamp{background:#fff7f7;border:1px solid #f0dede;border-radius:9px;padding:10px 14px;min-width:145px}.stamp .timebig{font-size:19px;color:#a30f18}.timebig{font-size:20px;font-weight:850;color:var(--navy)}.timegrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.smallcard{padding:14px}.smallcard .metric{font-size:23px}.foot{text-align:center;color:#8793a1;font-size:10px;margin:22px 0}
+.export-head{align-items:center}.export-btn{background:#b5121b;color:#fff;border:1px solid #b5121b;border-radius:8px;padding:9px 13px;font-weight:800;font-size:12px;white-space:nowrap}.export-btn:hover{background:#8f0d15}.daily-filters{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:16px}.daily-filters .controls{gap:8px}.daily-filters select{min-width:135px}#dailyExport{background:var(--bg);padding:0 0 8px}
+@media(max-width:520px){.daily-filters .controls{width:100%}.daily-filters select{min-width:0;flex:1}.export-head{align-items:flex-start}.export-btn{padding:8px 10px}}
+@media(max-width:850px){.metrics,.officegrid,.timegrid{grid-template-columns:repeat(2,minmax(0,1fr))}.head{align-items:flex-start}}
+@media(max-width:520px){header{padding:18px 15px}.head{display:block}.connection{display:inline-block;margin-top:11px}main{padding:0 11px;margin-top:14px}.metrics,.officegrid,.timegrid{gap:8px}.metric-card,.office{padding:12px}.metric{font-size:25px}.office-pct{font-size:21px}.controls{width:100%}.controls select{flex:1;min-width:0}.topbar button{margin-left:auto}}
+
+/* Visual polish: retain the existing Department of Posts palette */
+:root{
+ --shadow:0 10px 30px rgba(143,13,21,.075),0 2px 7px rgba(42,32,32,.035);
+}
+body{
+ background:
+  radial-gradient(ellipse at 8% 0%,rgba(197,31,42,.045),transparent 34%),
+  radial-gradient(ellipse at 95% 18%,rgba(181,18,27,.035),transparent 30%),
+  var(--bg);
+}
+header{
+ position:relative;overflow:hidden;
+ background:linear-gradient(115deg,#b5121b 0%,#a50f18 52%,#8f0d15 100%);
+ box-shadow:0 8px 26px rgba(143,13,21,.2);
+}
+header:before{
+ content:"";position:absolute;inset:-60% -15% auto auto;width:55%;height:220%;
+ background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.10) 48%,transparent 61%);
+ transform:rotate(-12deg);pointer-events:none;
+}
+.head{position:relative;z-index:1}
+.connection{backdrop-filter:blur(8px);box-shadow:inset 0 1px rgba(255,255,255,.15)}
+.led{box-shadow:0 0 0 4px rgba(107,226,155,.12),0 0 12px rgba(107,226,155,.55);animation:ledPulse 2.4s ease-in-out infinite}
+main{animation:pageIn .55s ease both}
+.card,.panel,.timebanner,.topbar.daily-filters{
+ transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+}
+.card,.panel{
+ position:relative;
+ box-shadow:0 8px 24px rgba(143,13,21,.055),0 2px 6px rgba(42,32,32,.025);
+}
+.card:before,.panel:before{
+ content:"";position:absolute;inset:0 0 auto;height:45%;
+ border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.48),transparent);
+ pointer-events:none;opacity:.75;
+}
+.card:hover,.panel:hover{
+ transform:translateY(-3px);
+ box-shadow:0 15px 34px rgba(143,13,21,.11),0 4px 10px rgba(42,32,32,.04);
+ border-color:#e9caca;
+}
+.metric-card,.office{overflow:hidden;animation:cardRise .48s both}
+.metrics .metric-card:nth-child(2),.officegrid .office:nth-child(2){animation-delay:.06s}
+.metrics .metric-card:nth-child(3),.officegrid .office:nth-child(3){animation-delay:.12s}
+.metrics .metric-card:nth-child(4),.officegrid .office:nth-child(4){animation-delay:.18s}
+.metric-card:after,.office:after{
+ content:"";position:absolute;top:0;right:0;width:88px;height:88px;
+ background:radial-gradient(circle at top right,rgba(181,18,27,.075),transparent 70%);
+ pointer-events:none;
+}
+.metric{text-shadow:0 2px 12px rgba(42,32,32,.07)}
+.office-pct{ text-shadow:0 2px 10px rgba(20,125,75,.10) }
+.track{box-shadow:inset 0 1px 2px rgba(0,0,0,.08)}
+.bar{transition:width .8s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 8px currentColor}
+.tabs{gap:8px}
+.tab{transition:background .2s ease,color .2s ease,transform .2s ease}
+.tab:hover{background:#fff0f0;color:var(--navy);transform:translateY(-1px)}
+.tab.active{box-shadow:0 -2px 10px rgba(181,18,27,.05) inset}
+button,.export-btn{
+ transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+button:hover,.export-btn:hover{
+ transform:translateY(-2px);
+ box-shadow:0 7px 16px rgba(143,13,21,.18);
+ filter:brightness(1.035);
+}
+button:active,.export-btn:active{transform:translateY(0) scale(.985)}
+select{
+ box-shadow:0 2px 7px rgba(42,32,32,.025);
+ transition:border-color .2s ease,box-shadow .2s ease;
+}
+select:focus{outline:none;border-color:#c51f2a;box-shadow:0 0 0 3px rgba(197,31,42,.11)}
+.sectionhead h2{letter-spacing:-.2px}
+.tablewrap{border-radius:14px}
+tbody tr{transition:background .16s ease}
+tbody tr:hover{background:#fff7f7}
+th{background:linear-gradient(180deg,#fbfcfd,#f4f7fa)}
+.total{background:linear-gradient(90deg,#fff8f8,#f7f9fc)}
+.chartbox{background:linear-gradient(145deg,#fff,#fffafa)}
+.timebanner{box-shadow:var(--shadow)}
+.stamp{box-shadow:inset 0 1px rgba(255,255,255,.9),0 2px 7px rgba(143,13,21,.035)}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes cardRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ledPulse{0%,100%{box-shadow:0 0 0 4px rgba(107,226,155,.10),0 0 8px rgba(107,226,155,.35)}50%{box-shadow:0 0 0 6px rgba(107,226,155,.15),0 0 15px rgba(107,226,155,.65)}}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
+
+</style>
+</head>
+<body>
+<header><div class="head"><div><div class="kicker">Department of Posts · RMS 'X' Division</div><h1>Digital Transaction Dashboard</h1><div class="subtitle">MPCM Counter performance · RMS X Division</div></div><div class="connection"><span class="led"></span><span id="connectionText">DATA BRIDGE NOT CONNECTED</span></div></div></header>
+<main>
+<div id="alert" class="alert">Setup required: connect this dashboard to your Google Apps Script web app.</div>
+<div class="topbar">
+ <div class="controls"><span id="updated" class="updated">Not connected</span><button id="refresh" class="primary">↻ Refresh</button></div>
+</div>
+<div class="tabs"><button class="tab active" id="dailyTab">Daily performance</button><button class="tab" id="timeTab">Present time status</button><button class="tab" id="monthlyTab">Monthly performance</button></div>
+<div id="monthlyView">
+ <div class="topbar daily-filters monthly-filters"><div class="controls"><span class="fieldlabel">Month</span><select id="monthlyMonthSelect" disabled><option>Loading months…</option></select><span class="fieldlabel">Office</span><select id="monthlyOfficeSelect"><option value="all">All offices</option><option value="MPCM Counter Agra Cantt">Agra Cantt</option><option value="MPCM Counter Banda RMS">Banda RMS</option><option value="MPCM Counter Jhansi RMS">Jhansi RMS</option><option value="MPCM Counter Mathura Jn RMS">Mathura Jn RMS</option></select></div></div>
+ <div class="sectionhead export-head"><div><h2>Monthly report</h2><div class="hint">Select month and office to view monthly performance</div></div><button class="export-btn" id="downloadMonthly">↓ Download JPG</button></div>
+ <div id="monthlyExport">
+  <div class="metrics" id="monthlyMetrics"><div class="card metric-card"><div class="metric-label">Digital transaction percentage</div><div class="metric">—</div><div class="note">Selected month</div></div><div class="card metric-card"><div class="metric-label">Total transactions</div><div class="metric">—</div><div class="note">All counters</div></div><div class="card metric-card"><div class="metric-label">Digital transactions</div><div class="metric">—</div><div class="note">Non-cash transactions</div></div><div class="card metric-card"><div class="metric-label">Counters below 80%</div><div class="metric">—</div><div class="note">Require attention</div></div></div>
+  <section class="section"><div class="sectionhead"><div><h2>Office-wise performance</h2><div class="hint">Green: 80% and above · Red: below 80%</div></div></div><div class="officegrid" id="monthlyOfficeCards"><div class="card empty">Waiting for data</div></div></section>
+  <section class="section"><div class="sectionhead"><div><h2>Transaction details</h2><div class="hint">Channel-wise transactions for the selected month and office</div></div></div><div class="panel tablewrap"><table><thead><tr><th>Office</th><th>Cash</th><th>DQR Scan</th><th>SBIPOS Card</th><th>Bharat QR</th><th>UPI</th><th>Total</th><th>Digital</th><th>Digital %</th></tr></thead><tbody id="monthlyRows"><tr><td colspan="9" class="empty">Waiting for data</td></tr></tbody></table></div></section>
+ </div>
+ <section class="section"><div class="sectionhead"><div><h2>Monthly trend</h2><div class="hint">Division-wide digital transaction percentage by month</div></div></div><div class="panel chartbox" id="monthlyChart"><div class="empty">Monthly trend will appear when data is connected.</div></div></section>
+</div>
+<div id="dailyView" hidden>
+ <div class="topbar daily-filters">
+  <div class="controls"><span class="fieldlabel">Month</span><select id="monthSelect" disabled><option>Loading months…</option></select><span class="fieldlabel">Date</span><select id="dateSelect" disabled><option>Waiting for data</option></select><span class="fieldlabel">Office</span><select id="officeSelect" disabled><option value="all">All offices</option></select></div>
+ </div>
+ <div class="sectionhead export-head"><div><h2>Daily report</h2><div class="hint">Select month, date and office to view performance</div></div><button class="export-btn" id="downloadDaily">↓ Download JPG</button></div>
+ <div id="dailyExport">
+ <div class="metrics" id="metrics">
+  <div class="card metric-card"><div class="metric-label">Overall digital transactions</div><div class="metric">—</div><div class="note">Selected report</div></div>
+  <div class="card metric-card"><div class="metric-label">Total transactions</div><div class="metric">—</div><div class="note">All counters</div></div>
+  <div class="card metric-card"><div class="metric-label">Digital transactions</div><div class="metric">—</div><div class="note">Non-cash transactions</div></div>
+  <div class="card metric-card"><div class="metric-label">Counters below 80%</div><div class="metric">—</div><div class="note">Require attention</div></div>
+ </div>
+ <section class="section"><div class="sectionhead"><div><h2>Office-wise performance</h2><div class="hint">Green: 80% and above · Red: below 80%</div></div></div><div class="officegrid" id="officeCards"><div class="card empty">Waiting for data</div></div></section>
+ <section class="section"><div class="sectionhead"><div><h2>Transaction details</h2><div class="hint">Channel-wise transactions for the selected date and office</div></div></div><div class="panel tablewrap"><table><thead><tr><th>Office</th><th>Cash</th><th>DQR Scan</th><th>SBIPOS Card</th><th>Bharat QR</th><th>UPI</th><th>Total</th><th>Digital</th><th>Digital %</th></tr></thead><tbody id="dailyRows"><tr><td colspan="9" class="empty">Waiting for data</td></tr></tbody></table></div></section>
+ <section class="section daily-trend-section"><div class="sectionhead"><div><h2>Daily trend</h2><div class="hint">Overall digital transaction percentage by report date</div></div></div><div class="panel chartbox" id="chart"><div class="empty">Trend will appear when data is connected.</div></div></section>
+ </div>
+</div>
+<div id="timeView" hidden>
+ <div class="timebanner">
+  <div class="time-stamps">
+   <div class="stamp"><div class="fieldlabel">REPORT DATE</div><div class="timebig" id="latestReportDate">—</div></div>
+   <div class="stamp"><div class="fieldlabel">REPORT TIME</div><div class="timebig" id="latestReportTime">—</div></div>
+  </div>
+  <div class="controls"><span class="fieldlabel">Select snapshot</span><select id="snapshotSelect" disabled><option>Loading…</option></select></div>
+  <div class="note" id="timeMeta">Live snapshot from the Random tab</div>
+ </div>
+ <div class="metrics" id="timeMetrics">
+  <div class="card metric-card"><div class="metric-label">Overall digital percentage</div><div class="metric">—</div></div>
+  <div class="card metric-card"><div class="metric-label">Total transactions</div><div class="metric">—</div></div>
+  <div class="card metric-card"><div class="metric-label">Digital transactions</div><div class="metric">—</div></div>
+  <div class="card metric-card"><div class="metric-label">Offices below 80%</div><div class="metric">—</div></div>
+ </div>
+ <section class="section"><div class="sectionhead"><div><h2>Office-wise present status</h2><div class="hint">Latest available time-wise percentage · Target 80%</div></div></div><div class="officegrid" id="randomOfficeCards"><div class="card empty">Waiting for time-wise data</div></div></section>
+ <section class="section"><div class="sectionhead"><div><h2>Transaction details</h2><div class="hint">Channel-wise counts for the selected time snapshot</div></div></div><div class="panel tablewrap"><table id="randomTable"><tbody><tr><td class="empty">Waiting for Random tab data</td></tr></tbody></table></div></section>
+</div>
+<div class="foot">Target: 80% · Auto-refresh every 5 minutes · Source: Google Sheets via Apps Script</div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+/* PASTE YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL BELOW. */
+const API_URL='https://script.google.com/macros/s/AKfycbwS-b78eqOOJA_Z7BqAzWQ0AXhf6m0KaT1LQBUkMRH2EiDRZ44LC60BWHk_TcUWAsY/exec';
+const REFRESH_MS=300000;
+let data=null,reports=[],randomRows=[],randomSnapshots=[];
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function showAlert(msg,type=''){const a=$('alert');a.textContent=msg;a.className='alert '+type}
+function numeric(v){const n=parseFloat(String(v??'').replace(/,/g,'').replace('%',''));return Number.isFinite(n)?n:0}
+function percent(v){let n=numeric(v);return n>0&&n<=1?n*100:n}
+function status(p){return p>=80?'good':'bad'}
+function dateInfo(s){const m=String(s).match(/(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/);if(!m)return null;const dd=m[1].padStart(2,'0'),mm=m[2].padStart(2,'0'),yy=m[3];return {key:`${yy}-${mm}-${dd}`,label:`${dd}.${mm}.${yy}`,sort:+`${yy}${mm}${dd}`}}
+function findHeader(rows,start){for(let i=start;i<Math.min(rows.length,start+6);i++){const a=(rows[i]||[]).map(x=>String(x).toLowerCase());if(a.some(x=>x.includes('office name')))return {index:i,cols:{office:a.findIndex(x=>x.includes('office name')),cash:a.findIndex(x=>x.includes('cash')),dqr:a.findIndex(x=>x.includes('dqr')),card:a.findIndex(x=>x.includes('card')),bharat:a.findIndex(x=>x.includes('bharat')),upi:a.findIndex(x=>x.includes('upi')),total:a.findIndex(x=>x.includes('total transaction')&&!x.includes('digital')),digital:a.findIndex(x=>x.includes('total digital')),pct:a.findIndex(x=>x.includes('digital transaction')&&x.includes('%'))}}}return null}
+function parseDaily(rows){const out=[];for(let i=0;i<rows.length;i++){const title=(rows[i]||[]).find(x=>/digital transaction report dated/i.test(String(x)));const d=dateInfo(title);if(!d)continue;const h=findHeader(rows,i+1);if(!h)continue;const c=h.cols,offices=[];let total=null;for(let j=h.index+1;j<rows.length;j++){const r=rows[j]||[],name=String(r[c.office]||'').trim();if(!name){if(offices.length)break;continue}const obj={name,cash:numeric(r[c.cash]),dqr:numeric(r[c.dqr]),card:numeric(r[c.card]),bharat:numeric(r[c.bharat]),upi:numeric(r[c.upi]),transactions:numeric(r[c.total]),digital:numeric(r[c.digital]),percent:percent(r[c.pct])};if(/^total$/i.test(name)){total=obj;break}if(!/mpcm|counter/i.test(name))break;offices.push(obj)}if(offices.length){const sum=k=>offices.reduce((a,x)=>a+x[k],0),tx=sum('transactions'),dg=sum('digital');if(!total)total={cash:sum('cash'),dqr:sum('dqr'),card:sum('card'),bharat:sum('bharat'),upi:sum('upi'),transactions:tx,digital:dg,percent:tx?dg/tx*100:0};out.push({...d,offices,total})}}return out.sort((a,b)=>a.sort-b.sort)}
+function monthLabel(key){const [y,m]=key.split('-');const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return names[Number(m)-1]+'-'+y}
+function refreshDateOptions(){
+ const month=$('monthSelect').value;
+ const monthReports=reports.filter(r=>monthLabel(r.key)===month);
+ const old=$('dateSelect').value;
+ $('dateSelect').innerHTML=monthReports.slice().reverse().map(r=>`<option value="${r.key}">${r.label}</option>`).join('');
+ $('dateSelect').value=monthReports.some(r=>r.key===old)?old:(monthReports[monthReports.length-1]?.key||'');
+ $('dateSelect').disabled=!monthReports.length;
+}
+function selectedReport(){return reports.find(x=>x.key===$('dateSelect').value)||reports[reports.length-1]}
+function selectedOffices(report){const key=$('officeSelect').value;return key==='all'?report.offices:report.offices.filter(x=>x.name===key)}
+function sumRows(o){const s=k=>o.reduce((a,x)=>a+(+x[k]||0),0),tx=s('transactions'),dg=s('digital');return {cash:s('cash'),dqr:s('dqr'),card:s('card'),bharat:s('bharat'),upi:s('upi'),transactions:tx,digital:dg,percent:tx?dg/tx*100:0}}
+function fmt(n){return Math.round(n||0).toLocaleString('en-IN')}
+function pFmt(n){return (n||0).toFixed(2)+'%'}
+function renderDaily(){const r=selectedReport();if(!r)return;const offices=selectedOffices(r),t=$('officeSelect').value==='all'?r.total:sumRows(offices),below=offices.filter(x=>x.percent<80).length;
+$('metrics').innerHTML=`<div class="card metric-card"><div class="metric-label">Digital transaction percentage</div><div class="metric ${status(t.percent)} metric">${pFmt(t.percent)}</div><div class="note">Report dated ${r.label}</div></div><div class="card metric-card"><div class="metric-label">Total transactions</div><div class="metric metric">${fmt(t.transactions)}</div><div class="note">${offices.length} counter(s) selected</div></div><div class="card metric-card"><div class="metric-label">Digital transactions</div><div class="metric metric">${fmt(t.digital)}</div><div class="note">${fmt(t.transactions-t.digital)} cash transactions</div></div><div class="card metric-card"><div class="metric-label">Counters below 80%</div><div class="metric ${below?'bad':'good'} metric">${below} / ${offices.length}</div><div class="note">${below?'Require improvement':'Target achieved'}</div></div>`;
+$('officeCards').innerHTML=offices.map(x=>`<div class="card office"><div style="display:flex;justify-content:space-between;gap:7px"><div class="office-name">${esc(x.name.replace(/^MPCM Counter /i,''))}</div><span class="pill ${status(x.percent)==='bad'?'bad':''}">${x.percent>=80?'TARGET MET':'BELOW TARGET'}</span></div><div class="office-pct ${status(x.percent)}">${pFmt(x.percent)}</div><div class="track"><div class="bar ${status(x.percent)}" style="width:${Math.max(0,Math.min(100,x.percent))}%"></div></div><div class="note" style="margin-top:8px">${fmt(x.digital)} digital / ${fmt(x.transactions)} total</div></div>`).join('')||'<div class="card empty">No matching office found.</div>';
+const rows=offices.map(x=>`<tr><td>${esc(x.name)}</td><td>${fmt(x.cash)}</td><td>${fmt(x.dqr)}</td><td>${fmt(x.card)}</td><td>${fmt(x.bharat)}</td><td>${fmt(x.upi)}</td><td>${fmt(x.transactions)}</td><td>${fmt(x.digital)}</td><td class="${status(x.percent)}"><b>${pFmt(x.percent)}</b></td></tr>`).join('');
+const totalRow=$('officeSelect').value==='all'?`<tr class="total"><td>Total</td><td>${fmt(t.cash)}</td><td>${fmt(t.dqr)}</td><td>${fmt(t.card)}</td><td>${fmt(t.bharat)}</td><td>${fmt(t.upi)}</td><td>${fmt(t.transactions)}</td><td>${fmt(t.digital)}</td><td class="${status(t.percent)}">${pFmt(t.percent)}</td></tr>`:'';
+$('dailyRows').innerHTML=rows+totalRow;
+renderChart()}
+function renderChart(){const key=$('officeSelect').value;const ds=reports.map(r=>{if(key==='all')return r;const x=r.offices.find(o=>o.name===key);return x?{...r,total:x}:null}).filter(Boolean);if(!ds.length){$('chart').innerHTML='<div class="empty">No trend data.</div>';return}const W=900,H=220,L=48,R=18,T=12,B=35,iw=W-L-R,ih=H-T-B,pts=ds.map((r,i)=>({x:L+(ds.length===1?iw/2:i*iw/(ds.length-1)),y:T+ih-(Math.min(100,r.total.percent)/100)*ih,r}));const grid=[0,20,40,60,80,100].map(v=>{let y=T+ih-ih*v/100;return `<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="#e7edf3"/><text x="${L-8}" y="${y+4}" text-anchor="end" font-size="10" fill="#718196">${v}%</text>`}).join('');const path=pts.map((p,i)=>(i?'L':'M')+p.x+','+p.y).join(' '),dots=pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="4" fill="#2678ad"><title>${p.r.label} ${pFmt(p.r.total.percent)}</title></circle>`).join(''),labels=pts.map(p=>`<text x="${p.x}" y="${H-10}" text-anchor="middle" font-size="10" fill="#718196">${p.r.label.slice(0,5)}</text>`).join('');$('chart').innerHTML=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Daily trend">${grid}<path d="${path}" fill="none" stroke="#b5121b" stroke-width="3" stroke-linecap="round"/>${dots}${labels}</svg>`}
+function parseRandomSnapshots(rows){
+ const snapshots=[];
+ for(let i=0;i<rows.length;i++){
+  const row=rows[i]||[];
+  const title=row.map(x=>String(x||'').trim()).find(x=>/digital transaction report dated/i.test(x));
+  if(!title)continue;
+  const d=dateInfo(title);
+  const tm=title.match(/(\d{1,2}:\d{2})\s*(Hrs?|Hours?)?/i);
+  let h=-1,cols={};
+  for(let j=i+1;j<Math.min(i+5,rows.length);j++){
+   const a=(rows[j]||[]).map(x=>String(x||'').trim().toLowerCase());
+   const oi=a.findIndex(x=>x.includes('office name'));
+   if(oi>=0){
+    h=j;
+    cols={office:oi,cash:a.findIndex(x=>x.includes('cash')),dqr:a.findIndex(x=>x.includes('dqr')),card:a.findIndex(x=>x.includes('card')),bharat:a.findIndex(x=>x.includes('bharat')),upi:a.findIndex(x=>x.includes('upi')),total:a.findIndex(x=>x.includes('total transaction')&&!x.includes('digital')),digital:a.findIndex(x=>x.includes('total digital')),pct:a.findIndex(x=>x.includes('digital transaction')&&x.includes('%'))};
+    break;
+   }
+  }
+  if(h<0)continue;
+  const offices=[];let total=null;
+  for(let j=h+1;j<rows.length;j++){
+   const r=rows[j]||[],name=String(r[cols.office]||'').trim();
+   if(!name){if(offices.length)break;continue}
+   const obj={name,cash:numeric(r[cols.cash]),dqr:numeric(r[cols.dqr]),card:numeric(r[cols.card]),bharat:numeric(r[cols.bharat]),upi:numeric(r[cols.upi]),transactions:numeric(r[cols.total]),digital:numeric(r[cols.digital]),percent:percent(r[cols.pct])};
+   if(/^total$/i.test(name)){total=obj;break}
+   if(!/mpcm|counter/i.test(name))break;
+   offices.push(obj);
+  }
+  if(offices.length){
+   const sum=k=>offices.reduce((a,x)=>a+(+x[k]||0),0),tx=sum('transactions'),dg=sum('digital');
+   if(!total)total={cash:sum('cash'),dqr:sum('dqr'),card:sum('card'),bharat:sum('bharat'),upi:sum('upi'),transactions:tx,digital:dg,percent:tx?dg/tx*100:0};
+   snapshots.push({key:(d?d.key:'')+'_'+(tm?tm[1].replace(':',''):'0000'),date:d?d.label:title,time:tm?tm[1]+' Hrs':'Time not specified',sort:(d?d.sort:0)*10000+(tm?Number(tm[1].replace(':','')):0),offices,total,title});
+  }
+ }
+ return snapshots.sort((a,b)=>a.sort-b.sort);
+}
+function renderRandom(rows){
+ randomRows=rows||[];
+ randomSnapshots=parseRandomSnapshots(randomRows);
+ const sel=$('snapshotSelect'),old=sel.value;
+ sel.innerHTML=randomSnapshots.slice().reverse().map(x=>`<option value="${esc(x.key)}">${esc(x.date)} · ${esc(x.time)}</option>`).join('')||'<option value="">No time-wise report found</option>';
+ sel.disabled=!randomSnapshots.length;
+ sel.value=randomSnapshots.some(x=>x.key===old)?old:(randomSnapshots[randomSnapshots.length-1]?.key||'');
+ renderRandomSnapshot();
+}
+function renderRandomSnapshot(){
+ const snap=randomSnapshots.find(x=>x.key===$('snapshotSelect').value)||randomSnapshots[randomSnapshots.length-1];
+ if(!snap){
+  $('latestReportDate').textContent='—';$('latestReportTime').textContent='—';
+  $('timeMeta').textContent='Check that Random tab contains report title, headings and office rows.';
+  $('timeMetrics').innerHTML='<div class="card empty">No structured time-wise report could be read.</div>';
+  $('randomOfficeCards').innerHTML='<div class="card empty">No office data available.</div>';
+  $('randomTable').innerHTML='<tbody><tr><td class="empty">No time-wise data available.</td></tr></tbody>';
+  return;
+ }
+ const chosen=$('officeSelect').value;
+ const offices=chosen==='all'?snap.offices:snap.offices.filter(x=>x.name===chosen);
+ const total=chosen==='all'?snap.total:sumRows(offices);
+ const below=offices.filter(x=>x.percent<80).length;
+ $('latestReportDate').textContent=snap.date;$('latestReportTime').textContent=snap.time;
+ $('timeMeta').textContent=`${offices.length} office(s) · Snapshot: ${snap.time} · Source: Random tab`;
+ $('timeMetrics').innerHTML=`
+  <div class="card metric-card"><div class="metric-label">Digital transaction percentage</div><div class="metric ${status(total.percent)} metric">${pFmt(total.percent)}</div><div class="note">${esc(snap.date)} · ${esc(snap.time)}</div></div>
+  <div class="card metric-card"><div class="metric-label">Total transactions</div><div class="metric metric">${fmt(total.transactions)}</div><div class="note">Selected ${chosen==='all'?'offices':'office'}</div></div>
+  <div class="card metric-card"><div class="metric-label">Digital transactions</div><div class="metric metric">${fmt(total.digital)}</div><div class="note">${fmt(total.transactions-total.digital)} cash transactions</div></div>
+  <div class="card metric-card"><div class="metric-label">Offices below 80%</div><div class="metric ${below?'bad':'good'} metric">${below} / ${offices.length}</div><div class="note">${below?'Require improvement':'Target achieved'}</div></div>`;
+ $('randomOfficeCards').innerHTML=offices.map(x=>`<div class="card office"><div style="display:flex;justify-content:space-between;gap:7px"><div class="office-name">${esc(x.name.replace(/^MPCM Counter /i,''))}</div><span class="pill ${x.percent>=80?'':'bad'}">${x.percent>=80?'TARGET MET':'BELOW TARGET'}</span></div><div class="office-pct ${status(x.percent)}">${pFmt(x.percent)}</div><div class="track"><div class="bar ${status(x.percent)}" style="width:${Math.max(0,Math.min(100,x.percent))}%"></div></div><div class="note" style="margin-top:8px">${fmt(x.digital)} digital / ${fmt(x.transactions)} total</div></div>`).join('')||'<div class="card empty">No data for this office in this snapshot.</div>';
+ const rows=offices.map(x=>`<tr><td>${esc(x.name)}</td><td>${fmt(x.cash)}</td><td>${fmt(x.dqr)}</td><td>${fmt(x.card)}</td><td>${fmt(x.bharat)}</td><td>${fmt(x.upi)}</td><td>${fmt(x.transactions)}</td><td>${fmt(x.digital)}</td><td class="${status(x.percent)}"><b>${pFmt(x.percent)}</b></td></tr>`).join('');
+ const totalRow=chosen==='all'?`<tr class="total"><td>Total</td><td>${fmt(total.cash)}</td><td>${fmt(total.dqr)}</td><td>${fmt(total.card)}</td><td>${fmt(total.bharat)}</td><td>${fmt(total.upi)}</td><td>${fmt(total.transactions)}</td><td>${fmt(total.digital)}</td><td class="${status(total.percent)}">${pFmt(total.percent)}</td></tr>`:'';
+ $('randomTable').innerHTML='<thead><tr><th>Office</th><th>Cash</th><th>DQR Scan</th><th>SBIPOS Card</th><th>Bharat QR</th><th>UPI</th><th>Total</th><th>Digital</th><th>Digital %</th></tr></thead><tbody>'+rows+totalRow+'</tbody>';
+}
+function render(){if($('dailyView').hidden===false)renderDaily();renderRandomSnapshot();renderMonthly(data?.tabs?.Monthly||[])}
+let monthlyDataRows=[],monthlyRecords=[],monthlyHeaders=[],monthlyMonthIndex=-1,monthlyPctIndex=-1;
+function monthToken(v){
+ const t=String(v??'').trim();
+ let m=t.match(/^([A-Za-z]{3,9})[-\/ ]?(\d{4})$/);
+ if(m){const names={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};const n=names[m[1].slice(0,3).toLowerCase()];if(n)return {key:m[2]+'-'+String(n).padStart(2,'0'),label:m[1].slice(0,3)+'-'+m[2]}}
+ m=t.match(/^(\d{1,2})[.\/-](\d{4})$/);if(m)return {key:m[2]+'-'+m[1].padStart(2,'0'),label:m[1].padStart(2,'0')+'-'+m[2]};
+ return null;
+}
+function monthFromTitle(row){
+ const text=(row||[]).map(v=>String(v??'')).join(' ');
+ const m=text.match(/(?:month\s+of|for\s+the\s+month\s+of)\s+([A-Za-z]{3,9}[-\/ ]\d{4})/i);
+ return m?monthToken(m[1]):null;
+}
+function isMonthlyHeader(row){
+ return (row||[]).some(v=>/office\s*name/i.test(String(v??''))) &&
+        (row||[]).some(v=>/total\s*transaction/i.test(String(v??'')));
+}
+function renderMonthly(rows){
+ const clean=(rows||[]).filter(r=>r.some(v=>String(v??'').trim()!==''));
+ if(!clean.length){$('monthlyTable').innerHTML='<tbody><tr><td class="empty">Monthly tab is empty or unavailable.</td></tr></tbody>';return}
+ monthlyRecords=[];monthlyHeaders=[];let currentMonth=null,activeHeader=null;
+ for(let i=0;i<clean.length;i++){
+  const row=clean[i];
+  const titleMonth=monthFromTitle(row);
+  if(titleMonth){currentMonth=titleMonth;activeHeader=null;continue}
+  if(isMonthlyHeader(row)){
+   activeHeader=row;
+   if(!monthlyHeaders.length)monthlyHeaders=row;
+   continue;
+  }
+  if(activeHeader && currentMonth && row.some(v=>String(v??'').trim()!=='')){
+   const officeCell=row.find(v=>/^mpcm\s+counter\b/i.test(String(v??'').trim()) || /^total$/i.test(String(v??'').trim()));
+   if(officeCell!==undefined)monthlyRecords.push({month:currentMonth,row});
+  }
+ }
+ monthlyDataRows=monthlyRecords.map(x=>x.row);
+ monthlyMonthIndex=monthlyHeaders.findIndex(v=>/month|period/i.test(String(v)));
+ monthlyPctIndex=monthlyHeaders.findIndex(v=>/digital.*%|percentage|percent/i.test(String(v)));
+ const monthValues=[...new Map(monthlyRecords.map(x=>[x.month.key,x.month])).values()].sort((a,b)=>a.key.localeCompare(b.key));
+ const sel=$('monthlyMonthSelect'),old=sel.value;
+ sel.innerHTML=monthValues.map(m=>`<option value="${m.key}">${esc(m.label)}</option>`).join('');
+ sel.disabled=!monthValues.length;
+ sel.value=monthValues.some(m=>m.key===old)?old:(monthValues[monthValues.length-1]?.key||'');
+ if(!monthValues.length){
+  $('monthlyTable').innerHTML='<tbody><tr><td class="empty">Could not identify month-wise report sections. Check that each report has a title such as “Digital Transaction Report for the month of October-2026”.</td></tr></tbody>';
+  $('monthlyChart').innerHTML='<div class="empty">Monthly trend will appear when month-wise data is available.</div>';
+  return;
+ }
+ renderMonthlySelection();
+}
+function renderMonthlySelection(){
+ if(!monthlyHeaders.length)return;
+ const selected=$('monthlyMonthSelect').value,office=$('monthlyOfficeSelect').value;
+ const monthRows=monthlyRecords.filter(rec=>rec.month.key===selected);
+ const col=(re)=>monthlyHeaders.findIndex(h=>re.test(String(h??'')));
+ const idx={office:col(/office\s*name/i),cash:col(/^cash/i),dqr:col(/dqr/i),card:col(/sbipos.?card/i),bharat:col(/bharat.?qr/i),upi:col(/upi/i),total:col(/total\s*transaction/i),digital:col(/total\s*digital/i),pct:col(/digital\s*transaction\s*%|digital\s*%|percentage|percent/i)};
+ const get=(r,k)=>idx[k]>=0?(Number(String(r[idx[k]]??'').replace(/,/g,''))||0):0;
+ const records=monthRows.filter(x=>idx.office<0||!/^total$/i.test(String(x.row[idx.office]??'').trim()));
+ const offices=records.map(x=>{const r=x.row,transactions=get(r,'total'),digital=get(r,'digital'),cash=get(r,'cash'),dqr=get(r,'dqr'),card=get(r,'card'),bharat=get(r,'bharat'),upi=get(r,'upi');let pct=idx.pct>=0?percent(r[idx.pct]):NaN;if(!Number.isFinite(pct)||pct===0)pct=transactions?digital/transactions*100:0;return {name:String(r[idx.office]??'').trim(),cash,dqr,card,bharat,upi,transactions,digital,percent:pct}});
+ const chosen=office==='all'?offices:offices.filter(x=>x.name===office);
+ const total=chosen.reduce((a,x)=>({cash:a.cash+x.cash,dqr:a.dqr+x.dqr,card:a.card+x.card,bharat:a.bharat+x.bharat,upi:a.upi+x.upi,transactions:a.transactions+x.transactions,digital:a.digital+x.digital}),{cash:0,dqr:0,card:0,bharat:0,upi:0,transactions:0,digital:0});
+ total.percent=total.transactions?total.digital/total.transactions*100:0;
+ const below=chosen.filter(x=>x.percent<80).length;
+ $('monthlyMetrics').innerHTML=`<div class="card metric-card"><div class="metric-label">Digital transaction percentage</div><div class="metric ${status(total.percent)} metric">${pFmt(total.percent)}</div><div class="note">${esc($('monthlyMonthSelect').selectedOptions[0]?.textContent||'Selected month')}</div></div><div class="card metric-card"><div class="metric-label">Total transactions</div><div class="metric metric">${fmt(total.transactions)}</div><div class="note">${chosen.length} counter(s) selected</div></div><div class="card metric-card"><div class="metric-label">Digital transactions</div><div class="metric metric">${fmt(total.digital)}</div><div class="note">${fmt(total.transactions-total.digital)} cash transactions</div></div><div class="card metric-card"><div class="metric-label">Counters below 80%</div><div class="metric ${below?'bad':'good'} metric">${below} / ${chosen.length}</div><div class="note">${below?'Require improvement':'Target achieved'}</div></div>`;
+ $('monthlyOfficeCards').innerHTML=chosen.map(x=>`<div class="card office"><div style="display:flex;justify-content:space-between;gap:7px"><div class="office-name">${esc(x.name.replace(/^MPCM Counter /i,''))}</div><span class="pill ${x.percent<80?'bad':''}">${x.percent>=80?'TARGET MET':'BELOW TARGET'}</span></div><div class="office-pct ${status(x.percent)}">${pFmt(x.percent)}</div><div class="track"><div class="bar ${status(x.percent)}" style="width:${Math.max(0,Math.min(100,x.percent))}%"></div></div><div class="note" style="margin-top:8px">${fmt(x.digital)} digital / ${fmt(x.transactions)} total</div></div>`).join('')||'<div class="card empty">No matching office found.</div>';
+ const rows=chosen.map(x=>`<tr><td>${esc(x.name)}</td><td>${fmt(x.cash)}</td><td>${fmt(x.dqr)}</td><td>${fmt(x.card)}</td><td>${fmt(x.bharat)}</td><td>${fmt(x.upi)}</td><td>${fmt(x.transactions)}</td><td>${fmt(x.digital)}</td><td class="${status(x.percent)}"><b>${pFmt(x.percent)}</b></td></tr>`).join('');
+ const totalRow=office==='all'?`<tr class="total"><td>Total</td><td>${fmt(total.cash)}</td><td>${fmt(total.dqr)}</td><td>${fmt(total.card)}</td><td>${fmt(total.bharat)}</td><td>${fmt(total.upi)}</td><td>${fmt(total.transactions)}</td><td>${fmt(total.digital)}</td><td class="${status(total.percent)}">${pFmt(total.percent)}</td></tr>`:'';
+ $('monthlyRows').innerHTML=rows+totalRow||'<tr><td colspan="9" class="empty">No data available for this month.</td></tr>';
+ drawMonthlyTrend();
+}
+function drawMonthlyTrend(){
+ const grouped=new Map();
+ monthlyRecords.forEach(rec=>{const m=rec.month,r=rec.row;let val=monthlyPctIndex>=0?percent(r[monthlyPctIndex]):NaN;if(!Number.isFinite(val)||val===0){const pctCell=r.find(v=>/%/.test(String(v)));if(pctCell!==undefined)val=percent(pctCell)}if(Number.isFinite(val)){const isTotal=r.some(v=>/^total$/i.test(String(v??'').trim()));if(!grouped.has(m.key)||isTotal)grouped.set(m.key,{label:m.label,value:val})}});
+ const ds=[...grouped.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(x=>x[1]);
+ if(!ds.length){$('monthlyChart').innerHTML='<div class="empty">Could not identify monthly percentage values from the Monthly tab headings.</div>';return}
+ const W=900,H=220,L=48,R=18,T=12,B=35,iw=W-L-R,ih=H-T-B,pts=ds.map((r,i)=>({x:L+(ds.length===1?iw/2:i*iw/(ds.length-1)),y:T+ih-Math.min(100,Math.max(0,r.value))*ih/100,r}));
+ const grid=[0,20,40,60,80,100].map(v=>{let y=T+ih-ih*v/100;return `<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="#e7edf3"/><text x="${L-8}" y="${y+4}" text-anchor="end" font-size="10" fill="#718196">${v}%</text>`}).join('');
+ const path=pts.map((p,i)=>(i?'L':'M')+p.x+','+p.y).join(' '),dots=pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="4" fill="#b5121b"><title>${esc(p.r.label)} ${pFmt(p.r.value)}</title></circle>`).join(''),labels=pts.map(p=>`<text x="${p.x}" y="${H-10}" text-anchor="middle" font-size="10" fill="#718196">${esc(p.r.label)}</text>`).join('');
+ $('monthlyChart').innerHTML=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly performance trend">${grid}<path d="${path}" fill="none" stroke="#b5121b" stroke-width="3" stroke-linecap="round"/>${dots}${labels}</svg>`;
+}
+function receive(payload){if(!payload||!payload.ok){showAlert('Apps Script returned an error: '+(payload?.error||'Unknown error'),'error');$('connectionText').textContent='CONNECTION ERROR';return}
+ data=payload;
+ reports=[];
+ Object.keys(payload.tabs||{}).filter(n=>/^[A-Za-z]{3}-\d{2}$/.test(n)).forEach(n=>{reports=reports.concat(parseDaily(payload.tabs[n]||[]))});
+ reports.sort((a,b)=>a.sort-b.sort);
+ const monthNames=[...new Set(reports.map(r=>monthLabel(r.key)))].sort((a,b)=>{
+  const order={'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12};
+  const pa=a.split('-'),pb=b.split('-');
+  return (Number(pa[1])*100+order[pa[0]])-(Number(pb[1])*100+order[pb[0]]);
+ });
+ $('monthSelect').innerHTML=monthNames.map(m=>`<option>${m}</option>`).join('')||'<option>No months found</option>';
+ $('monthSelect').disabled=!monthNames.length;
+ if(monthNames.length){$('monthSelect').value=monthNames[monthNames.length-1];refreshDateOptions()}
+ const names=[...new Set(reports.flatMap(r=>r.offices.map(o=>o.name)))];
+ $('officeSelect').innerHTML='<option value="all">All offices</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n.replace(/^MPCM Counter /i,''))}</option>`).join('');
+ $('officeSelect').disabled=false;
+ $('connectionText').textContent='CONNECTED';
+ const stamp=new Date(payload.updatedAt);
+ stamp.setMinutes(0,0,0);
+ stamp.setHours(stamp.getHours()-1);
+ $('updated').textContent='Updated upto '+stamp.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:false});
+ showAlert(`Connected to ${payload.spreadsheet}. ${reports.length} daily report date(s) loaded; Monthly and Random tabs ${payload.tabs?.Monthly?.length?'loaded':'checked'}.`,'ok');
+ renderMonthly(payload.tabs?.Monthly||[]);
+ renderRandom(payload.tabs?.Random||[]);
+ renderDaily();
+}
+let requestTimer=null;
+function load(){if(!API_URL||API_URL.includes('PASTE_YOUR')){showAlert('The Apps Script URL has not been added yet. Follow the SETUP instructions in the package README.');return}if(requestTimer)clearTimeout(requestTimer);$('refresh').disabled=true;$('refresh').textContent='Loading…';const old=document.getElementById('api-script');if(old)old.remove();const cb='dashboardCallback_'+Date.now();let completed=false;window[cb]=function(payload){completed=true;clearTimeout(requestTimer);$('refresh').disabled=false;$('refresh').textContent='↻ Refresh';receive(payload);try{delete window[cb]}catch(e){window[cb]=undefined}};requestTimer=setTimeout(()=>{if(!completed){$('refresh').disabled=false;$('refresh').textContent='↻ Refresh';$('connectionText').textContent='NO RESPONSE';showAlert('No response from Apps Script. Check that the deployment is set to Execute as: Me and Who has access: Anyone. Use the latest /exec URL, not /dev.','error')}},18000);const sc=document.createElement('script');sc.id='api-script';sc.onerror=()=>{clearTimeout(requestTimer);$('refresh').disabled=false;$('refresh').textContent='↻ Refresh';$('connectionText').textContent='REQUEST FAILED';showAlert('The Apps Script URL could not be reached. Verify the deployed /exec URL and internet access.','error')};sc.src=API_URL+(API_URL.includes('?')?'&':'?')+'callback='+cb+'&t='+Date.now();document.head.appendChild(sc)}
+$('refresh').addEventListener('click',load);
+$('monthSelect').addEventListener('change',()=>{refreshDateOptions();renderDaily()});
+$('dateSelect').addEventListener('change',renderDaily);
+$('officeSelect').addEventListener('change',()=>{renderDaily();renderRandomSnapshot();renderMonthlySelection()});
+function activateTab(which){
+ ['monthlyView','dailyView','timeView'].forEach(id=>$(id).hidden=true);
+ ['monthlyTab','dailyTab','timeTab'].forEach(id=>$(id).classList.remove('active'));
+ $(which+'View').hidden=false;$(which+'Tab').classList.add('active');
+ if(which==='daily')renderDaily();if(which==='time')renderRandomSnapshot();if(which==='monthly')renderMonthlySelection();
+}
+$('monthlyTab').addEventListener('click',()=>activateTab('monthly'));
+$('dailyTab').addEventListener('click',()=>activateTab('daily'));
+$('timeTab').addEventListener('click',()=>activateTab('time'));
+$('snapshotSelect').addEventListener('change',renderRandomSnapshot);
+if(API_URL&&!API_URL.includes('PASTE_YOUR'))load();setInterval(()=>{if(API_URL&&!API_URL.includes('PASTE_YOUR'))load()},REFRESH_MS);
+activateTab('daily');
+function exportAsJpg(targetId, filename){
+ const target=$(targetId);
+ if(!target){showAlert('The report area could not be found.','error');return}
+ if(typeof html2canvas!=='function'){showAlert('JPG export library did not load. Check internet access and try again.','error');return}
+ const btn=filename==='Daily_Performance.jpg'?$ ('downloadDaily'):$('downloadMonthly');
+ const old=btn.textContent;btn.disabled=true;btn.textContent='Preparing JPG…';
+ const trend=filename==='Daily_Performance.jpg'?document.querySelector('.daily-trend-section'):null;
+ const previousDisplay=trend?trend.style.display:'';
+ if(trend)trend.style.display='none';
+ html2canvas(target,{backgroundColor:'#fff',scale:2,useCORS:true,logging:false,windowWidth:Math.max(document.documentElement.clientWidth,target.scrollWidth),onclone:(clonedDoc)=>{
+  const clonedTarget=clonedDoc.getElementById(targetId);
+  if(!clonedTarget)return;
+  const cleanStyle=clonedDoc.createElement('style');
+  cleanStyle.textContent=`
+   *,*::before,*::after{animation:none!important;transition:none!important;transform:none!important;box-shadow:none!important;text-shadow:none!important;filter:none!important;-webkit-filter:none!important;opacity:1!important}
+   *::before,*::after{display:none!important;content:none!important;background:none!important}
+   #${targetId},#${targetId} *{background-image:none!important;box-shadow:none!important;text-shadow:none!important;filter:none!important;-webkit-filter:none!important}
+   #${targetId}{background:#fff!important}
+   #${targetId} .card,#${targetId} .panel,#${targetId} .metric-card,#${targetId} .office,#${targetId} .tablewrap,#${targetId} table,#${targetId} tbody,#${targetId} tr,#${targetId} td{background:#fff!important;background-color:#fff!important;border-color:#eadede!important;box-shadow:none!important}
+   #${targetId} th{background:#fff0f0!important;background-color:#fff0f0!important;color:#8f0d15!important}
+   #${targetId} .total{background:#fff7f7!important;background-color:#fff7f7!important}
+   #${targetId} .daily-trend-section{display:none!important}
+   #${targetId} .metrics{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important}
+   #${targetId} .officegrid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important}
+   #${targetId} .metric-card,#${targetId} .office{visibility:visible!important;display:block!important}
+   #${targetId} .tablewrap{overflow:visible!important}
+   #${targetId} table{width:100%!important}
+  `;
+  clonedDoc.head.appendChild(cleanStyle);
+  clonedTarget.querySelectorAll('*').forEach(el=>{
+   ['box-shadow','text-shadow','filter','background-image'].forEach(prop=>el.style.setProperty(prop,'none','important'));
+   if(el.matches('.card,.panel,.metric-card,.office,.tablewrap,table,tbody,tr,td'))el.style.setProperty('background-color','#ffffff','important');
+   if(el.matches('th')){el.style.setProperty('background-color','#fff0f0','important');el.style.setProperty('color','#8f0d15','important')}
+   if(el.matches('.total'))el.style.setProperty('background-color','#fff7f7','important');
+  });
+  clonedTarget.querySelectorAll('.daily-trend-section').forEach(el=>el.style.setProperty('display','none','important'));
+ }}).then(canvas=>{
+  const a=document.createElement('a');a.download=filename;a.href=canvas.toDataURL('image/jpeg',0.94);a.click();
+ }).catch(err=>showAlert('Could not create JPG: '+err.message,'error')).finally(()=>{if(trend)trend.style.display=previousDisplay;btn.disabled=false;btn.textContent=old});
+}
+$('downloadDaily').addEventListener('click',()=>exportAsJpg('dailyExport','Daily_Performance.jpg'));
+$('downloadMonthly').addEventListener('click',()=>exportAsJpg('monthlyExport','Monthly_Performance.jpg'));$('monthlyMonthSelect').addEventListener('change',renderMonthlySelection);
+$('monthlyOfficeSelect').addEventListener('change',renderMonthlySelection);
+</script>
+</body></html>
